@@ -4,11 +4,10 @@ import com.example.labb3.entities.Category;
 import com.example.labb3.mappers.CategoryMapper;
 import com.example.labb3.repositories.CategoryRepository;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
-
-import static java.util.stream.Collectors.toList;
+import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class CategoryService {
@@ -24,6 +23,10 @@ public class CategoryService {
                 (category) -> {return new CategoryMapper(category.getId(), category.getName(), category.getSymbol(), category.getDescription());
                 }
         ).toList();
+    }
+
+    public Optional<Category> getCategory(String name) {
+        return Optional.ofNullable(categoryRepository.findCategoryByName(name));
     }
 
     public String addCategory(Category category) {

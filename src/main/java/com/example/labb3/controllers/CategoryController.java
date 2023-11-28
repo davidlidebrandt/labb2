@@ -6,6 +6,7 @@ import com.example.labb3.services.CategoryService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("api/categories")
@@ -21,9 +22,9 @@ public class CategoryController {
         return categoryService.getAllCategories();
     }
 
-    @GetMapping("{id}")
-    public String getCategory(@PathVariable int id) {
-        return List.of("Fun", "work").get(id);
+    @GetMapping("{name}")
+    public Optional<Category> getCategory(@PathVariable String name) {
+        return categoryService.getCategory(name);
     }
 
     @PostMapping

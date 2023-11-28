@@ -4,6 +4,7 @@ import com.example.labb3.entities.Category;
 import com.example.labb3.mappers.CategoryMapper;
 import com.example.labb3.repositories.CategoryRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 
@@ -25,8 +26,12 @@ public class CategoryService {
         ).toList();
     }
 
-    public String addCategory() {
-
+    public String addCategory(Category category) {
+        var newCategory = new Category();
+        newCategory.setName(category.getName());
+        newCategory.setSymbol(category.getSymbol());
+        newCategory.setDescription(category.getDescription());
+        categoryRepository.save(newCategory);
         return "Category added";
     }
 

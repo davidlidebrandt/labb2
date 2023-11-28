@@ -1,5 +1,6 @@
 package com.example.labb3.controllers;
 
+import com.example.labb3.entities.Category;
 import com.example.labb3.mappers.CategoryMapper;
 import com.example.labb3.services.CategoryService;
 import org.springframework.web.bind.annotation.*;
@@ -26,7 +27,7 @@ public class CategoryController {
     }
 
     @PostMapping
-    public void addCategory() {
-
+    public String addCategory(@RequestBody Category category) {
+        return categoryService.addCategory(category);
     }
 }

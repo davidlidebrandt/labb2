@@ -1,12 +1,13 @@
 package com.example.labb3.controllers;
 
+import com.example.labb3.mappers.CategoryMapper;
 import com.example.labb3.services.CategoryService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("api/category")
+@RequestMapping("api/categories")
 public class CategoryController {
 
     private CategoryService categoryService;
@@ -15,8 +16,8 @@ public class CategoryController {
         this.categoryService = categoryService;
     }
     @GetMapping
-    public List<String> getAllCategories() {
-        return List.of("Fun", "work");
+    public List<CategoryMapper> getAllCategories() {
+        return categoryService.getAllCategories();
     }
 
     @GetMapping("{id}")

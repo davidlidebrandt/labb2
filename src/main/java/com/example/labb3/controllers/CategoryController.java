@@ -3,6 +3,8 @@ package com.example.labb3.controllers;
 import com.example.labb3.entities.Category;
 import com.example.labb3.mappers.CategoryMapper;
 import com.example.labb3.services.CategoryService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,8 +25,12 @@ public class CategoryController {
     }
 
     @GetMapping("{name}")
-    public Optional<Category> getCategory(@PathVariable String name) {
-        return categoryService.getCategory(name);
+    public ResponseEntity<Optional<Category>> getCategory(@PathVariable String name) {
+        Optional<Category> category = categoryService.getCategory(name);
+        if(category.isEmpty()) {
+            return new ResponseEntity<>(category, HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(category, HttpStatus.OK);
     }
 
     @PostMapping

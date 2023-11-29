@@ -11,6 +11,7 @@ import java.util.UUID;
 public class Place {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
     @Column(name = "name_")

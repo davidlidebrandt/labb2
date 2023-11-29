@@ -1,12 +1,13 @@
 package com.example.labb3.controllers;
 
+import com.example.labb3.mappers.PlaceMapper;
 import com.example.labb3.services.PlaceService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("api/place")
+@RequestMapping("api/places")
 public class PlaceController {
 
     private PlaceService placeService;
@@ -15,8 +16,8 @@ public class PlaceController {
         this.placeService = placeService;
     }
     @GetMapping
-    public List<String> getAllPlaces() {
-        return List.of("1", "2", "3");
+    public List<PlaceMapper> getAllPlaces() {
+        return placeService.getAllPlaces();
     }
 
     @PostMapping

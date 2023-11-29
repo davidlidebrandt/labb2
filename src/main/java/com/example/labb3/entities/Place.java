@@ -1,9 +1,11 @@
 package com.example.labb3.entities;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import jakarta.persistence.*;
 import org.geolatte.geom.G2D;
 import org.geolatte.geom.Point;
 
+import java.awt.geom.Point2D;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -32,17 +34,18 @@ public class Place {
     @Column(name = "description_")
     private String description;
 
+    @JsonSerialize(using = Point2)
     private Point<G2D> coordinate;
 
     private LocalDateTime created;
 
+    public Place() {
+        this.created = LocalDateTime.now();
+    }
+
 
     public LocalDateTime getCreated() {
         return created;
-    }
-
-    public void setCreated(LocalDateTime created) {
-        this.created = created;
     }
 
     public Point<G2D> getCoordinate() {
@@ -89,9 +92,6 @@ public class Place {
         return id;
     }
 
-    public void setId(UUID id) {
-        this.id = id;
-    }
 
     public String getName() {
         return name;

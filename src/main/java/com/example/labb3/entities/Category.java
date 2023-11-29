@@ -2,6 +2,8 @@ package com.example.labb3.entities;
 
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -10,6 +12,9 @@ public class Category {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
+
+    @OneToMany
+    private List<Category> categories = new ArrayList<>();
 
     @Column(name = "name_")
     private String name;

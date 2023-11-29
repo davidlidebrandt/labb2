@@ -18,7 +18,7 @@ public class Place {
     private String name;
 
     @ManyToOne
-    @JoinColumn(name = "id")
+    @JoinColumn(name = "category")
     private Category category;
 
     @Column(name = "user_id")

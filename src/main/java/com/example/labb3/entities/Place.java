@@ -1,5 +1,6 @@
 package com.example.labb3.entities;
 
+import com.example.labb3.PointSerializer;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import jakarta.persistence.*;
 import org.geolatte.geom.G2D;
@@ -34,7 +35,7 @@ public class Place {
     @Column(name = "description_")
     private String description;
 
-    @JsonSerialize(using = Point2)
+    @JsonSerialize(using = PointSerializer.class)
     private Point<G2D> coordinate;
 
     private LocalDateTime created;

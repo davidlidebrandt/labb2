@@ -1,7 +1,7 @@
 package com.example.labb3.controllers;
 
-import com.example.labb3.entities.Place;
-import com.example.labb3.mappers.PlaceMapper;
+import com.example.labb3.mappers.PlaceGetMapper;
+import com.example.labb3.mappers.PlacePostMapper;
 import com.example.labb3.services.PlaceService;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,12 +17,12 @@ public class PlaceController {
         this.placeService = placeService;
     }
     @GetMapping
-    public List<PlaceMapper> getAllPlaces() {
+    public List<PlaceGetMapper> getAllPlaces() {
         return placeService.getAllPlaces();
     }
 
     @PostMapping
-    public String addPlace(@RequestBody Place place) {
+    public String addPlace(@RequestBody PlacePostMapper place) {
         placeService.addPlace(place);
         return "Place added";
     }

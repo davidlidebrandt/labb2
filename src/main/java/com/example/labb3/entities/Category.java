@@ -51,6 +51,8 @@ public class Category {
     }
 
     public void setSymbol(String symbol) {
-        this.symbol = symbol;
+        if(symbol.codePoints().anyMatch(Character::isEmoji)) {
+            this.symbol = symbol;
+        }
     }
 }

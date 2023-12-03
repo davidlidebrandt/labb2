@@ -1,5 +1,6 @@
 package com.example.labb3.controllers;
 
+import com.example.labb3.entities.Place;
 import com.example.labb3.mappers.PlaceGetMapper;
 import com.example.labb3.mappers.PlacePostMapper;
 import com.example.labb3.services.PlaceService;
@@ -17,7 +18,7 @@ public class PlaceController {
         this.placeService = placeService;
     }
     @GetMapping
-    public List<PlaceGetMapper> getAllPlaces() {
+    public List<Place> getAllPlaces() {
         return placeService.getAllPlaces();
     }
 

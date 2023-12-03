@@ -1,12 +1,9 @@
 package com.example.labb3.entities;
-
 import com.example.labb3.PointSerializer;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import jakarta.persistence.*;
 import org.geolatte.geom.G2D;
 import org.geolatte.geom.Point;
-
-import java.awt.geom.Point2D;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -14,8 +11,8 @@ import java.util.UUID;
 public class Place {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     @Column(name = "name_")
     private String name;
@@ -89,7 +86,7 @@ public class Place {
         this.userId = userId;
     }
 
-    public UUID getId() {
+    public long getId() {
         return id;
     }
 

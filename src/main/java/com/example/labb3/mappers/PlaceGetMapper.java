@@ -8,7 +8,7 @@ import org.geolatte.geom.Point;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-public record PlaceGetMapper(UUID id, String name, String userId, Category category, String visibility,
+public record PlaceGetMapper(Long id, String name, String userId, CategoryMapper category, String visibility,
                              LocalDateTime lastModified, String description, @JsonSerialize(using = PointSerializer.class)
                           Point<G2D> coordinate, LocalDateTime created) {
 }

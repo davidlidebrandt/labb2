@@ -2,19 +2,27 @@ package com.example.labb3.entities;
 
 import jakarta.persistence.*;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 @Entity
 public class Category {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-    @OneToMany
-    private List<Category> categories = new ArrayList<>();
+    @OneToMany(mappedBy = "category")
+    private List<Place> places = new ArrayList<>();
+
+    public List<Place> getPlaces() {
+        return places;
+    }
+
+    public void setPlaces(List<Place> places) {
+        this.places = places;
+    }
 
     @Column(name = "name_")
     private String name;
@@ -24,11 +32,11 @@ public class Category {
     @Column(name = "description_")
     private String description;
 
-    public UUID getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(UUID id) {
+    public void setId(long id) {
         this.id = id;
     }
 

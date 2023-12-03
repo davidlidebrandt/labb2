@@ -1,7 +1,9 @@
 package com.example.labb3.services;
 import com.example.labb3.entities.Place;
+import com.example.labb3.mappers.CategoryMapper;
 import com.example.labb3.mappers.PlaceGetMapper;
 import com.example.labb3.mappers.PlacePostMapper;
+import com.example.labb3.repositories.CategoryRepository;
 import com.example.labb3.repositories.PlaceRepository;
 import org.geolatte.geom.G2D;
 import org.geolatte.geom.Point;
@@ -14,15 +16,17 @@ import org.geolatte.geom.codec.Wkt;
 @Service
 public class PlaceService {
     private PlaceRepository placeRepository;
+    private CategoryRepository categoryRepository;
 
-    public PlaceService(PlaceRepository placeRepository) {
+    public PlaceService(PlaceRepository placeRepository, CategoryRepository categoryRepository) {
         this.placeRepository = placeRepository;
+        this.categoryRepository = categoryRepository;
     }
 
-    public List<PlaceGetMapper> getAllPlaces() {
-        return placeRepository.findAll().stream().map((place -> {
-            return new PlaceGetMapper(place.getId(), place.getName(), place.getUserId(), place.getCategory(), place.getVisibility(), place.getLastModified(), place.getDescription(), place.getCoordinate(), place.getCreated());
-        })).toList();
+    public List<Place> getAllPlaces() {
+        return placeRepository.findAll();//.stream().map((place -> {
+            //return new PlaceGetMapper(place.getId(), place.getName(), place.getUserId(), new CategoryMapper(place.getCategory().getId(), place.getCategory().getName(),place.getCategory().getSymbol(), place.getCategory().getDescription()), place.getVisibility(), place.getLastModified(), place.getDescription(), place.getCoordinate(), place.getCreated());
+        //})).toList();
     }
 
     public void addPlace(PlacePostMapper placeMapper) {
@@ -32,7 +36,9 @@ public class PlaceService {
         place.setUserId("dsdsd");
         place.setVisibility(placeMapper.visibility());
         place.setDescription(placeMapper.description());
-        place.setCategory(placeMapper.category());
+        var category = categoryRepository.findCategoryByName(placeMapper.category());
+        place.setCategory(category);
+        category.getPlaces().add(place);
         String text = "POINT (" + placeMapper.coordinate().lon() + placeMapper.coordinate().lat() + ")";
         Point<G2D> newPoint = (Point<G2D>) Wkt.fromWkt(text, WGS84);
         place.setCoordinate(newPoint);

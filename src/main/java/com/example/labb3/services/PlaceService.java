@@ -68,6 +68,10 @@ public class PlaceService {
         placeRepository.save(place);
     }
 
+    public void deletePlace(Long id) {
+        placeRepository.deleteById(id);
+    }
+
     public static PlaceGetMapper mapPlaceToPlaceGetMapper(Place place) {
         return new PlaceGetMapper(place.getId(), place.getName(), place.getUserId(), new CategoryMapper(place.getCategory().getId(), place.getCategory().getName(),place.getCategory().getSymbol(), place.getCategory().getDescription()), place.getVisibility(), place.getLastModified(), place.getDescription(), place.getCoordinate(), place.getCreated());
     }

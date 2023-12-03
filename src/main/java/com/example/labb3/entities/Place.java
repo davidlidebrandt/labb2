@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import jakarta.persistence.*;
 import org.geolatte.geom.G2D;
 import org.geolatte.geom.Point;
+
+import javax.management.BadAttributeValueExpException;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -75,7 +77,10 @@ public class Place {
     }
 
     public void setVisibility(String visibility) {
-        this.visibility = visibility;
+        boolean correctValue = visibility.equalsIgnoreCase("public") || visibility.equalsIgnoreCase("private");
+        if(correctValue) {
+            this.visibility = visibility;;
+        }
     }
 
     public String getUserId() {

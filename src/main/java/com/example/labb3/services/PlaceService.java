@@ -3,6 +3,7 @@ import com.example.labb3.entities.Place;
 import com.example.labb3.mappers.CategoryMapper;
 import com.example.labb3.mappers.PlaceGetMapper;
 import com.example.labb3.mappers.PlacePostMapper;
+import com.example.labb3.mappers.PlacePutMapper;
 import com.example.labb3.repositories.CategoryRepository;
 import com.example.labb3.repositories.PlaceRepository;
 import org.geolatte.geom.G2D;
@@ -12,6 +13,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 import static org.geolatte.geom.crs.CoordinateReferenceSystems.WGS84;
 import org.geolatte.geom.codec.Wkt;
+
+import javax.management.BadAttributeValueExpException;
 
 @Service
 public class PlaceService {
@@ -44,7 +47,22 @@ public class PlaceService {
         place.setDescription(placeMapper.description());
         var category = categoryRepository.findCategoryByName(placeMapper.category());
         place.setCategory(category);
-        String text = "POINT (" + placeMapper.coordinate().lon() + placeMapper.coordinate().lat() + ")";
+        String text = "POINT(" + placeMapper.coordinate().lat() + " " + placeMapper.coordinate().lon() + ")";
+        Point<G2D> newPoint = (Point<G2D>) Wkt.fromWkt(text, WGS84);
+        place.setCoordinate(newPoint);
+        placeRepository.save(place);
+    }
+
+    public void updatePlace(PlacePutMapper newPlaceData) {
+        var placeOrNull = placeRepository.findById(newPlaceData.id());
+        var place = placeOrNull.get();
+        place.setLastModified(LocalDateTime.now());
+        place.setName(newPlaceData.name());
+        place.setVisibility(newPlaceData.visibility());
+        place.setDescription(newPlaceData.description());
+        var category = categoryRepository.findCategoryByName(newPlaceData.category());
+        place.setCategory(category);
+        String text = "POINT(" + newPlaceData.coordinate().lat() + " " + newPlaceData.coordinate().lon() + ")";
         Point<G2D> newPoint = (Point<G2D>) Wkt.fromWkt(text, WGS84);
         place.setCoordinate(newPoint);
         placeRepository.save(place);

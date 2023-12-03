@@ -4,5 +4,5 @@ import com.example.labb3.PointSerializer;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 @JsonSerialize(using = PointSerializer.class)
-public record Coordinate(int lat, int lon) {
+public record Coordinate(double lat, double lon) {
 }

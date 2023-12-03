@@ -23,10 +23,16 @@ public class PlaceService {
         this.categoryRepository = categoryRepository;
     }
 
-    public List<Place> getAllPlaces() {
-        return placeRepository.findAll();//.stream().map((place -> {
-            //return new PlaceGetMapper(place.getId(), place.getName(), place.getUserId(), new CategoryMapper(place.getCategory().getId(), place.getCategory().getName(),place.getCategory().getSymbol(), place.getCategory().getDescription()), place.getVisibility(), place.getLastModified(), place.getDescription(), place.getCoordinate(), place.getCreated());
-        //})).toList();
+    public List<PlaceGetMapper> getAllPlaces() {
+        return placeRepository.findAll().stream().map((place -> {
+            return new PlaceGetMapper(place.getId(), place.getName(), place.getUserId(), new CategoryMapper(place.getCategory().getId(), place.getCategory().getName(),place.getCategory().getSymbol(), place.getCategory().getDescription()), place.getVisibility(), place.getLastModified(), place.getDescription(), place.getCoordinate(), place.getCreated());
+        })).toList();
+    }
+
+    public List<PlaceGetMapper> getPlace(Long id) {
+        return placeRepository.findById(id).stream().map(
+            PlaceService::mapPlaceToPlaceGetMapper
+        ).toList();
     }
 
     public void addPlace(PlacePostMapper placeMapper) {
@@ -38,10 +44,15 @@ public class PlaceService {
         place.setDescription(placeMapper.description());
         var category = categoryRepository.findCategoryByName(placeMapper.category());
         place.setCategory(category);
-        category.getPlaces().add(place);
         String text = "POINT (" + placeMapper.coordinate().lon() + placeMapper.coordinate().lat() + ")";
         Point<G2D> newPoint = (Point<G2D>) Wkt.fromWkt(text, WGS84);
         place.setCoordinate(newPoint);
         placeRepository.save(place);
     }
+
+    public static PlaceGetMapper mapPlaceToPlaceGetMapper(Place place) {
+        return new PlaceGetMapper(place.getId(), place.getName(), place.getUserId(), new CategoryMapper(place.getCategory().getId(), place.getCategory().getName(),place.getCategory().getSymbol(), place.getCategory().getDescription()), place.getVisibility(), place.getLastModified(), place.getDescription(), place.getCoordinate(), place.getCreated());
+    }
 }
+
+

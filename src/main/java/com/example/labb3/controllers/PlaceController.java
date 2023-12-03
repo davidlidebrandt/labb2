@@ -18,8 +18,13 @@ public class PlaceController {
         this.placeService = placeService;
     }
     @GetMapping
-    public List<Place> getAllPlaces() {
+    public List<PlaceGetMapper> getAllPlaces() {
         return placeService.getAllPlaces();
+    }
+
+    @GetMapping("{id}")
+    public List<PlaceGetMapper> getPlace(@PathVariable Long id) {
+        return placeService.getPlace(id);
     }
 
     @PostMapping

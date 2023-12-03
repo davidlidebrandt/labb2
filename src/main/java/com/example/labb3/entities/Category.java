@@ -13,16 +13,6 @@ public class Category {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToMany(mappedBy = "category")
-    private List<Place> places = new ArrayList<>();
-
-    public List<Place> getPlaces() {
-        return places;
-    }
-
-    public void setPlaces(List<Place> places) {
-        this.places = places;
-    }
 
     @Column(name = "name_")
     private String name;

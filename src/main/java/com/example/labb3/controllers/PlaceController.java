@@ -29,6 +29,11 @@ public class PlaceController {
         return placeService.getPlace(id);
     }
 
+    @GetMapping("/category/{name}")
+    public List<PlaceGetMapper> getPlacesByCategory(@PathVariable String name) {
+        return placeService.getPlacesByCategory(name);
+    }
+
     @PostMapping
     public String addPlace(@RequestBody PlacePostMapper place)  {
         placeService.addPlace(place);

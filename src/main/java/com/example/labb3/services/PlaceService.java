@@ -1,4 +1,5 @@
 package com.example.labb3.services;
+import com.example.labb3.entities.Category;
 import com.example.labb3.entities.Place;
 import com.example.labb3.mappers.CategoryMapper;
 import com.example.labb3.mappers.PlaceGetMapper;
@@ -35,6 +36,13 @@ public class PlaceService {
     public List<PlaceGetMapper> getPlace(Long id) {
         return placeRepository.findById(id).stream().map(
             PlaceService::mapPlaceToPlaceGetMapper
+        ).toList();
+    }
+
+    public List<PlaceGetMapper> getPlacesByCategory(String categoryName) {
+        var category = categoryRepository.findCategoryByName(categoryName);
+        return placeRepository.findAllByCategory(category).stream().map(
+                PlaceService::mapPlaceToPlaceGetMapper
         ).toList();
     }
 

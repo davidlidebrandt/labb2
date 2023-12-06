@@ -9,6 +9,8 @@ import com.example.labb3.repositories.CategoryRepository;
 import com.example.labb3.repositories.PlaceRepository;
 import org.geolatte.geom.G2D;
 import org.geolatte.geom.Point;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -47,10 +49,12 @@ public class PlaceService {
     }
 
     public void addPlace(PlacePostMapper placeMapper) {
+        String userName = getCurrentUserName();
         var place = new Place();
+        System.out.println(SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_USER")));
         place.setLastModified(LocalDateTime.now());
         place.setName(placeMapper.name());
-        place.setUserId("dsdsd");
+        place.setUserId(userName);
         place.setVisibility(placeMapper.visibility());
         place.setDescription(placeMapper.description());
         var category = categoryRepository.findCategoryByName(placeMapper.category());
@@ -82,6 +86,10 @@ public class PlaceService {
 
     public static PlaceGetMapper mapPlaceToPlaceGetMapper(Place place) {
         return new PlaceGetMapper(place.getId(), place.getName(), place.getUserId(), new CategoryMapper(place.getCategory().getId(), place.getCategory().getName(),place.getCategory().getSymbol(), place.getCategory().getDescription()), place.getVisibility(), place.getLastModified(), place.getDescription(), place.getCoordinate(), place.getCreated());
+    }
+
+    public String getCurrentUserName() {
+        return SecurityContextHolder.getContext().getAuthentication().getName();
     }
 }
 

@@ -27,10 +27,16 @@ public class SecurityConfig {
 
                 authorizeHttpRequests(authorize -> {
                     authorize.requestMatchers(HttpMethod.GET, "/api/categories/*").permitAll()
+                            .requestMatchers(HttpMethod.POST, "/api/categories").hasRole("ADMIN")
                             .requestMatchers(HttpMethod.GET, "/api/categories").permitAll()
+
                             .requestMatchers(HttpMethod.GET, "/api/places").permitAll()
                             .requestMatchers(HttpMethod.GET, "/api/places/*").permitAll()
-                            .requestMatchers(HttpMethod.POST, "/api/categories").hasRole("ADMIN")
+                            .requestMatchers(HttpMethod.POST, "/api/places").authenticated()
+                            .requestMatchers(HttpMethod.PATCH, "/api/places/*").authenticated()
+                            .requestMatchers(HttpMethod.DELETE, "/api/places/*").authenticated()
+                            .requestMatchers(HttpMethod.GET, "/api/places/user").authenticated()
+                            .requestMatchers(HttpMethod.GET, "/api/places/category/*").permitAll()
                             .anyRequest().denyAll();
                 }).build();
     }

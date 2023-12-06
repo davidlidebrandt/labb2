@@ -24,7 +24,7 @@ public class CategoryController {
         return categoryService.getAllCategories();
     }
 
-    @GetMapping("{name}")
+    @GetMapping("/{name}")
     public ResponseEntity<Optional<Category>> getCategory(@PathVariable String name) {
         Optional<Category> category = categoryService.getCategory(name);
         if(category.isEmpty()) {

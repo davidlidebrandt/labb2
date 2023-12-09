@@ -1,6 +1,6 @@
 package com.example.labb3.services;
-import com.example.labb3.entities.Category;
 import com.example.labb3.entities.Place;
+import com.example.labb3.exceptions.UnAuthorizedException;
 import com.example.labb3.mappers.CategoryMapper;
 import com.example.labb3.mappers.PlaceGetMapper;
 import com.example.labb3.mappers.PlacePostMapper;
@@ -9,15 +9,16 @@ import com.example.labb3.repositories.CategoryRepository;
 import com.example.labb3.repositories.PlaceRepository;
 import org.geolatte.geom.G2D;
 import org.geolatte.geom.Point;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
+
 import static org.geolatte.geom.crs.CoordinateReferenceSystems.WGS84;
 import org.geolatte.geom.codec.Wkt;
-
-import javax.management.BadAttributeValueExpException;
 
 @Service
 public class PlaceService {
@@ -30,12 +31,30 @@ public class PlaceService {
     }
 
     public List<PlaceGetMapper> getAllPlaces() {
-        return placeRepository.findAll().stream().map((place -> {
+        if(getCurrentUser() instanceof AnonymousAuthenticationToken) {
+            return placeRepository.findAllByVisibility("public").stream().map((place -> {
+                return new PlaceGetMapper(place.getId(), place.getName(), place.getUserId(), new CategoryMapper(place.getCategory().getId(), place.getCategory().getName(),place.getCategory().getSymbol(), place.getCategory().getDescription()), place.getVisibility(), place.getLastModified(), place.getDescription(), place.getCoordinate(), place.getCreated());
+            })).toList();
+        }
+        return placeRepository.findAllByVisibilityOrUserId("public", getCurrentUser().getName()).stream().map((place -> {
             return new PlaceGetMapper(place.getId(), place.getName(), place.getUserId(), new CategoryMapper(place.getCategory().getId(), place.getCategory().getName(),place.getCategory().getSymbol(), place.getCategory().getDescription()), place.getVisibility(), place.getLastModified(), place.getDescription(), place.getCoordinate(), place.getCreated());
         })).toList();
     }
 
+    public List<PlaceGetMapper> getAllPlacesByUser() {
+        return placeRepository.findAllByUserId(getCurrentUser().getName()).stream().map((place -> {
+            return new PlaceGetMapper(place.getId(), place.getName(), place.getUserId(), new CategoryMapper(place.getCategory().getId(), place.getCategory().getName(),place.getCategory().getSymbol(), place.getCategory().getDescription()), place.getVisibility(), place.getLastModified(), place.getDescription(), place.getCoordinate(), place.getCreated());
+        })).toList();
+    }
+
+    public getAllPlacesByRadius()
+
     public List<PlaceGetMapper> getPlace(Long id) {
+        if(getCurrentUser() instanceof AnonymousAuthenticationToken) {
+            return placeRepository.findByIdAndVisibility(id, "public").stream().map(
+                    PlaceService::mapPlaceToPlaceGetMapper
+            ).toList();
+        }
         return placeRepository.findById(id).stream().map(
             PlaceService::mapPlaceToPlaceGetMapper
         ).toList();
@@ -49,7 +68,7 @@ public class PlaceService {
     }
 
     public void addPlace(PlacePostMapper placeMapper) {
-        String userName = getCurrentUserName();
+        String userName = getCurrentUser().getName();
         var place = new Place();
         System.out.println(SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_USER")));
         place.setLastModified(LocalDateTime.now());
@@ -68,6 +87,9 @@ public class PlaceService {
     public void updatePlace(PlacePutMapper newPlaceData) {
         var placeOrNull = placeRepository.findById(newPlaceData.id());
         var place = placeOrNull.get();
+        if(!Objects.equals(place.getUserId(), getCurrentUser().getName())) {
+            throw new UnAuthorizedException();
+        }
         place.setLastModified(LocalDateTime.now());
         place.setName(newPlaceData.name());
         place.setVisibility(newPlaceData.visibility());
@@ -81,6 +103,11 @@ public class PlaceService {
     }
 
     public void deletePlace(Long id) {
+        var placeOrNull = placeRepository.findById(id);
+        var place = placeOrNull.get();
+        if(!Objects.equals(place.getUserId(), getCurrentUser().getName())) {
+            throw new UnAuthorizedException();
+        }
         placeRepository.deleteById(id);
     }
 
@@ -88,8 +115,8 @@ public class PlaceService {
         return new PlaceGetMapper(place.getId(), place.getName(), place.getUserId(), new CategoryMapper(place.getCategory().getId(), place.getCategory().getName(),place.getCategory().getSymbol(), place.getCategory().getDescription()), place.getVisibility(), place.getLastModified(), place.getDescription(), place.getCoordinate(), place.getCreated());
     }
 
-    public String getCurrentUserName() {
-        return SecurityContextHolder.getContext().getAuthentication().getName();
+    public Authentication getCurrentUser() {
+        return SecurityContextHolder.getContext().getAuthentication();
     }
 }
 

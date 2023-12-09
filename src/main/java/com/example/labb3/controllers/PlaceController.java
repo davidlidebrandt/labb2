@@ -34,10 +34,9 @@ public class PlaceController {
         return placeService.getPlacesByCategory(name);
     }
 
-    // need to get user id and pass on
     @GetMapping("/user")
     public List<PlaceGetMapper> getUserPlaces() {
-        return placeService.getAllPlaces();
+        return placeService.getAllPlacesByUser();
     }
 
     @PostMapping

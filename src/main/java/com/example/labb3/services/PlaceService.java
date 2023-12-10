@@ -1,5 +1,6 @@
 package com.example.labb3.services;
 import com.example.labb3.entities.Place;
+import com.example.labb3.exceptions.InvalidDataException;
 import com.example.labb3.exceptions.UnAuthorizedException;
 import com.example.labb3.mappers.CategoryMapper;
 import com.example.labb3.mappers.PlaceGetMapper;
@@ -32,22 +33,26 @@ public class PlaceService {
 
     public List<PlaceGetMapper> getAllPlaces() {
         if(getCurrentUser() instanceof AnonymousAuthenticationToken) {
-            return placeRepository.findAllByVisibility("public").stream().map((place -> {
-                return new PlaceGetMapper(place.getId(), place.getName(), place.getUserId(), new CategoryMapper(place.getCategory().getId(), place.getCategory().getName(),place.getCategory().getSymbol(), place.getCategory().getDescription()), place.getVisibility(), place.getLastModified(), place.getDescription(), place.getCoordinate(), place.getCreated());
-            })).toList();
+            return placeRepository.findAllByVisibility("public").stream().map(
+                    PlaceService::mapPlaceToPlaceGetMapper
+            ).toList();
         }
-        return placeRepository.findAllByVisibilityOrUserId("public", getCurrentUser().getName()).stream().map((place -> {
-            return new PlaceGetMapper(place.getId(), place.getName(), place.getUserId(), new CategoryMapper(place.getCategory().getId(), place.getCategory().getName(),place.getCategory().getSymbol(), place.getCategory().getDescription()), place.getVisibility(), place.getLastModified(), place.getDescription(), place.getCoordinate(), place.getCreated());
-        })).toList();
+        return placeRepository.findAllByVisibilityOrUserId("public", getCurrentUser().getName()).stream().map(
+                PlaceService::mapPlaceToPlaceGetMapper
+            ).toList();
     }
 
     public List<PlaceGetMapper> getAllPlacesByUser() {
-        return placeRepository.findAllByUserId(getCurrentUser().getName()).stream().map((place -> {
-            return new PlaceGetMapper(place.getId(), place.getName(), place.getUserId(), new CategoryMapper(place.getCategory().getId(), place.getCategory().getName(),place.getCategory().getSymbol(), place.getCategory().getDescription()), place.getVisibility(), place.getLastModified(), place.getDescription(), place.getCoordinate(), place.getCreated());
-        })).toList();
+        return placeRepository.findAllByUserId(getCurrentUser().getName()).stream().map(
+                PlaceService::mapPlaceToPlaceGetMapper
+                ).toList();
     }
 
-    public getAllPlacesByRadius()
+    public List<PlaceGetMapper> getAllPlacesByRadius(Point<G2D> point, double distance ) {
+        return placeRepository.findByDistance(point, distance).stream().map(
+                PlaceService::mapPlaceToPlaceGetMapper
+        ).toList();
+    }
 
     public List<PlaceGetMapper> getPlace(Long id) {
         if(getCurrentUser() instanceof AnonymousAuthenticationToken) {
@@ -68,6 +73,11 @@ public class PlaceService {
     }
 
     public void addPlace(PlacePostMapper placeMapper) {
+        var coordinate = placeMapper.coordinate();
+        if(coordinate.lat() < -90.0 || coordinate.lat() > 90.0 || coordinate.lon() < -180.0 || coordinate.lon() > 180.0) {
+            throw new InvalidDataException();
+        }
+
         String userName = getCurrentUser().getName();
         var place = new Place();
         System.out.println(SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_USER")));
@@ -85,6 +95,11 @@ public class PlaceService {
     }
 
     public void updatePlace(PlacePutMapper newPlaceData) {
+        var coordinate = newPlaceData.coordinate();
+        if(coordinate.lat() < -90.0 || coordinate.lat() > 90.0 || coordinate.lon() < -180.0 || coordinate.lon() > 180.0) {
+            throw new InvalidDataException();
+        }
+
         var placeOrNull = placeRepository.findById(newPlaceData.id());
         var place = placeOrNull.get();
         if(!Objects.equals(place.getUserId(), getCurrentUser().getName())) {

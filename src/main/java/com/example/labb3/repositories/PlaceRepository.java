@@ -22,9 +22,10 @@ public interface PlaceRepository extends ListCrudRepository<Place, Long> {
 
     List<Place> findAllByVisibilityOrUserId(String visibility, String user);
 
-    @Query(value = """SELECT * FROM playgroundWHERE ST_Distance_Sphere(coordinate, :location) < :distance""", nativeQuery = true)
-    List<Place> filterOnDistance(@Param("location") Point<G2D> location, @Param("distance") double distance);
-}
-
+    @Query
+    (value = """
+             SELECT * FROM place WHERE ST_Distance_Sphere(coordinate, :location) < :distance
+             """, nativeQuery = true)
+    List<Place> findByDistance(@Param("location") Point<G2D> location, @Param("distance") double distance);
 
 }

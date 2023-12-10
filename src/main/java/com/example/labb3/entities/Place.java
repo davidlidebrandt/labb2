@@ -23,7 +23,7 @@ public class Place {
     @JoinColumn(name = "category")
     private Category category;
 
-    @Column(name = "user_id")
+    @Column(name = "user_")
     private String userId;
 
     private String visibility;

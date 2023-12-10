@@ -49,7 +49,12 @@ public class PlaceService {
     }
 
     public List<PlaceGetMapper> getAllPlacesByRadius(Point<G2D> point, double distance ) {
-        return placeRepository.findByDistance(point, distance).stream().map(
+        if(getCurrentUser() instanceof AnonymousAuthenticationToken) {
+            return placeRepository.findByDistance(point, distance).stream().filter(p -> Objects.equals(p.getVisibility(), "public")).map(
+                    PlaceService::mapPlaceToPlaceGetMapper
+            ).toList();
+        }
+        return placeRepository.findByDistance(point, distance).stream().filter(p -> Objects.equals(p.getVisibility(), "public") || Objects.equals(p.getUserId(), getCurrentUser().getName())).map(
                 PlaceService::mapPlaceToPlaceGetMapper
         ).toList();
     }
@@ -88,7 +93,7 @@ public class PlaceService {
         place.setDescription(placeMapper.description());
         var category = categoryRepository.findCategoryByName(placeMapper.category());
         place.setCategory(category);
-        String text = "POINT(" + placeMapper.coordinate().lat() + " " + placeMapper.coordinate().lon() + ")";
+        String text = "POINT(" + placeMapper.coordinate().lon() + " " + placeMapper.coordinate().lat() + ")";
         Point<G2D> newPoint = (Point<G2D>) Wkt.fromWkt(text, WGS84);
         place.setCoordinate(newPoint);
         placeRepository.save(place);
@@ -111,7 +116,7 @@ public class PlaceService {
         place.setDescription(newPlaceData.description());
         var category = categoryRepository.findCategoryByName(newPlaceData.category());
         place.setCategory(category);
-        String text = "POINT(" + newPlaceData.coordinate().lat() + " " + newPlaceData.coordinate().lon() + ")";
+        String text = "POINT(" + newPlaceData.coordinate().lon() + " " + newPlaceData.coordinate().lat() + ")";
         Point<G2D> newPoint = (Point<G2D>) Wkt.fromWkt(text, WGS84);
         place.setCoordinate(newPoint);
         placeRepository.save(place);
